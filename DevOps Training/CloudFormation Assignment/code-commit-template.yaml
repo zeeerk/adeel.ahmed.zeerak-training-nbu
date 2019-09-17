@@ -1,0 +1,88 @@
+AWSTemplateFormatVersion: "2010-09-09"
+Description: Code Commit Template Assignment
+
+Parameters:
+  DevGroupName:
+    Type: String
+    Description: Developer Group Name
+  
+  SDevGroupName:
+    Type: String
+    Description: Senior Developer Group Name
+
+Resources:
+  adeelRepo:
+    Type: AWS::CodeCommit::Repository
+    Properties: 
+      RepositoryDescription : "Code Commit Repo for AWS Cloud Formation Assignment"
+      RepositoryName : "adeel-repo"
+
+
+  listRepoPolicy:
+    Type: AWS::IAM::Policy
+    Properties:
+      Groups: [!Ref 'SDevGroupName', !Ref 'DevGroupName' ]
+      PolicyName: "ListRepoPolicy"
+      PolicyDocument:
+        Statement:
+        - Effect: Allow
+          Resource: "*"
+          Action:
+            - codecommit:ListBranches
+            - codecommit:ListPullRequests
+            - codecommit:ListRepositories
+            - codecommit:ListTagsForResource
+
+
+
+  sdevPolicy:
+    Type: AWS::IAM::Policy
+    Properties:
+      Groups: [!Ref 'SDevGroupName', !Ref 'DevGroupName']
+      PolicyName: "SDevPolicy"
+      PolicyDocument:
+        Statement:
+        - Effect: Allow
+          Resource: !GetAtt adeelRepo.Arn
+          Action:
+          - codecommit:BatchGet*
+          - codecommit:BatchDescribe*
+          - codecommit:Get*
+          - codecommit:List*
+          - codecommit:Create*
+          - codecommit:DeleteBranch
+          - codecommit:DeleteFile
+          - codecommit:Describe*
+          - codecommit:Put*
+          - codecommit:Post*
+          - codecommit:Merge*
+          - codecommit:TagResource
+          - codecommit:Test*
+          - codecommit:UntagResource
+          - codecommit:Update*
+          - codecommit:GitPull
+          - codecommit:GitPush
+
+  devPolicy:
+    Type: AWS::IAM::Policy
+    Properties:
+      Groups: [!Ref 'DevGroupName']
+      PolicyName: "DevPolicy"
+      PolicyDocument:
+        Statement:
+        - Effect: Deny
+          Action: 
+          - codecommit:GitPush
+          - codecommit:DeleteBranch
+          - codecommit:PutFile
+          - codecommit:Merge*
+          Resource: !GetAtt adeelRepo.Arn
+          Condition:
+           StringEqualsIfExists:
+            codecommit:References:
+            - refs/heads/master
+            - refs/heads/develop
+            - refs/heads/preprod
+            - refs/heads/stage
+           'Null':
+              codecommit:References: false
