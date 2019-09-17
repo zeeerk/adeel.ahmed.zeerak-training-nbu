@@ -1,0 +1,46 @@
+---
+pipeline:
+  name: adeel-test-pipeline
+  roleArn: arn:aws:iam::692560313237:role/service-role/AWSCodePipelineServiceRole-us-east-1-muneeb-pipeline-task1
+  artifactStore:
+    type: S3
+    location: codepipeline-us-east-1-199757318912
+  stages:
+  - name: Source
+    actions:
+    - name: Source
+      actionTypeId:
+        category: Source
+        owner: AWS
+        provider: CodeCommit
+        version: '1'
+      runOrder: 1
+      configuration:
+        BranchName: master
+        PollForSourceChanges: 'false'
+        RepositoryName: adeel-task-repo
+      outputArtifacts:
+      - name: SourceArtifact
+      inputArtifacts: []
+      region: us-east-1
+  - name: Build
+    actions:
+    - name: Build
+      actionTypeId:
+        category: Build
+        owner: AWS
+        provider: CodeBuild
+        version: '1'
+      runOrder: 1
+      configuration:
+        ProjectName: adeel-task-build-project
+      outputArtifacts:
+      - name: BuildArtifact
+      inputArtifacts:
+      - name: SourceArtifact
+      region: us-east-1
+  version: 1
+metadata:
+  pipelineArn: arn:aws:codepipeline:us-east-1:692560313237:adeel-test-pipeline
+  created: 1567613213.951
+  updated: 1567613213.951

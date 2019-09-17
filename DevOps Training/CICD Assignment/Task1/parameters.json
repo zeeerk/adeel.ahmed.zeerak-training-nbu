@@ -1,0 +1,6 @@
+[
+    {
+        "ParameterKey":"AdeelS3BucketName",
+        "ParameterValue":"adeel-infrastructure-scripts"
+    }
+]

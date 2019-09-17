@@ -1,0 +1,20 @@
+version: 0.2
+
+phases:
+  install:
+   runtime-versions:
+      python: 3.7
+  pre_build:
+    commands:
+      - echo Nothing to do in the pre_build phase...
+  build:
+    commands:
+      - echo Build started on `date`
+      - cat pre-requisites.yml
+      - cat parameters.json
+      - aws cloudformation create-stack --stack-name adeel-stack-task-1 --template-body file://pre-requisites.yml --parameters file://parameters.json
+      - aws cloudformation package --template-file pre-requisites.yml --s3-bucket adeel-target-bucket --output-template-file adeel-packaged-template.yml
+
+  post_build:
+    commands:
+      - echo Build completed on `date`
